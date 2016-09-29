@@ -5,10 +5,20 @@ from itertools import cycle #IMPORTA LISTA CIRCULA PARA O ALGORITMO ROUND ROBIN
 
 #FUNÇÃO DO ALGORITMO FIFO
 def fifo ():
-	lista = ordena(0) #ORDENA A LISTA POR ORDEM DE CHEGADA
+	entradas = tmpEnt
+	tempos = tmpExe
+	for j in range(0,n):
+		for i in range(0,n-1):
+			if entradas[i]>entradas[i+1]:
+				Aux = entradas[i+1] #ORDENA A CHEGADA
+				entradas[i+1] = entradas[i]
+				entradas[i] = Aux
+				Aux = tempos[i+1] #ORDENA AS OS TEMPOS COM BASE NA DEADLINE
+				tempos[i+1] = tempos[i]
+				tempos[i] = Aux
 	soma = 0
 	for x in xrange(0,n):
-		aux = lista[x][1] - lista[x][0]		#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
+		aux = tempos[x] - entradas[x]	#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
 		soma += (n-x)*aux					#MULTIPLICA
 		pass
 	return float(soma/n);
@@ -42,27 +52,33 @@ def rr ():
 
 #FUNÇÃO DO ALGORITMO EDF
 def edf():
+	entradas = tmpEnt
+	tempos = tmpExe
 	for j in range(0,len(deadlines)):
 		for i in range(0,len(deadlines)-1):
 			if deadlines[i]>deadlines[i+1]:
 				Aux = deadlines[i+1] #ORDENA AS DEADLINES
 				deadlines[i+1] = deadlines[i]
 				deadlines[i] = Aux
-				Aux = tmpEnt[i+1] #ORDENA A CHEGADA COM BASE NA DEADLINE
-				tmpEnt[i+1] = tmpEnt[i]
-				tmpEnt[i] = Aux 
-				Aux = tmpExe[i+1] #ORDENA A O TEMPO COM BASE NA DEADLINE
-				tmpExe[i+1] = tmpExe[i]
-				tmpExe[i] = Aux
+				Aux = entradas[i+1] #ORDENA A CHEGADA COM BASE NA DEADLINE
+				entradas[i+1] = entradas[i]
+				entradas[i] = Aux 
+				Aux = tempos[i+1] #ORDENA A O TEMPO COM BASE NA DEADLINE
+				tempos[i+1] = tempos[i]
+				tempos[i] = Aux
+	print deadlines
+	print entradas
+	print tempos
 	soma = 0
 	for x in xrange(0,n):
-		aux = tmpExe[x] - tmpEnt[x]	#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
+		aux = tempos[x] - entradas[x]	#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
 		soma += (n-x)*aux					#MULTIPLICA
 		pass
 	return float(soma/n);
 
 #LEITURA DAS DEADLINES
 def lerDeadlines():
+	del deadlines[:]
 	for x in xrange(0,n):
 		deadlines.append(input("Informe a Deadline do processo "))
 		pass
