@@ -40,6 +40,34 @@ def rr ():
 			break
 	return 0
 
+#FUNÇÃO DO ALGORITMO EDF
+def edf():
+	for j in range(0,len(deadlines)):
+		for i in range(0,len(deadlines)-1):
+			if deadlines[i]>deadlines[i+1]:
+				Aux = deadlines[i+1] #ORDENA AS DEADLINES
+				deadlines[i+1] = deadlines[i]
+				deadlines[i] = Aux
+				Aux = tmpEnt[i+1] #ORDENA A CHEGADA COM BASE NA DEADLINE
+				tmpEnt[i+1] = tmpEnt[i]
+				tmpEnt[i] = Aux 
+				Aux = tmpExe[i+1] #ORDENA A O TEMPO COM BASE NA DEADLINE
+				tmpExe[i+1] = tmpExe[i]
+				tmpExe[i] = Aux
+	soma = 0
+	for x in xrange(0,n):
+		aux = tmpExe[x] - tmpEnt[x]	#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
+		soma += (n-x)*aux					#MULTIPLICA
+		pass
+	return float(soma/n);
+
+#LEITURA DAS DEADLINES
+def lerDeadlines():
+	for x in xrange(0,n):
+		deadlines.append(input("Informe a Deadline do processo "))
+		pass
+	
+
 
 #ORDENAÇÃO PASSANDO O TIPO: 0 = ORDENAÇÃO POR CHEGADA, 1 = ORDENAÇÃO POR TEMPO DE PROCESSO
 def ordena (tipo):
@@ -51,6 +79,7 @@ def ordena (tipo):
 n = int(input ("Informe o numero de processos: "))
 tmpExe = []
 tmpEnt = []
+deadlines = []
 
 #LÊ OS TEMPOS DE EXECUÇÃO E DE ENTRADA PARA CADA PROCESSO
 for x in xrange(1,n+1):
@@ -82,11 +111,12 @@ while cmd != 0:
 		print "=============================="
 		pass
 	elif cmd == 4:
+		lerDeadlines()
 		print "============ EDF ============="
+		print "TURNAROUND MEDIO: ", edf()
 		print "=============================="
 		pass
 	else:
 		print "Comando Inválido"
 		pass
 	cmd = input ("Escolha outro comando: ")
-print("Fim")
