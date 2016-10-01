@@ -35,25 +35,41 @@ def sjf ():
 
 #FUNÇÃO DO ALGORITMO ROUND ROBIN
 def rr ():
-	lista = ordena(0) #ORDENA A LISTA POR CHEGADA
-	lista = cycle(lista)
+	entradas = list(tmpEnt) #COPIA A LISTA DE ENTRADAS PARA UMA NOVA LISTA, QUE SERÁ ORDENADA
+	tempos = list(tmpExe) # MESMA IDEIA DE CIMA
 	relogio = 0
-	for processo in lista: #LISTA CIRCULAR 
-		if (processo[0]<=relogio & processo[1]>=quantum):
-			processo[1]-=quantum
-		elif (processo[0]<=relogio & processo[1]<quantum):
-			processo[1]-=processo[1]
-			next
-		relogio +=quantum
-		print(processo)
-		if(relogio>50):
+	processados = list(tmpEnt)
+	count = 0
+	soma = 0
+	for processo, entrada in cycle(zip(tempos, entradas)): #LISTA CIRCULAR
+		#print processo, " - ", entrada, " - ", count, " - ", processados[count]
+		if processo > processados[count]: ## AINDA FALTA SER PROCESSADO
+			if (processo-processados[count] > quantum) and (entrada <= relogio):
+				processados[count]+=quantum
+				relogio+=quantum
+				print "Processo ", count, " está em processamento."
+			elif (processo-processados[count] <= quantum) and (entrada <= relogio):
+				aux = processo-processados[count]
+				processados[count]+=aux
+				relogio+=aux
+				print "Processo ", count, " está em seu último processamento. R=", relogio
+				soma+=relogio
+			else: 
+				print "Processo ", count, " não chegou ainda."
+		else:
+			print "Processo ", count, " está pronto."
+		if count==n-1:
+			count=0
+		else:
+			count+=1
+		if processados == tempos:
 			break
-	return 0
+	return float(soma/n)
 
 #FUNÇÃO DO ALGORITMO EDF
 def edf():
-	entradas = tmpEnt
-	tempos = tmpExe
+	entradas = list(tmpEnt) #COPIA A LISTA DE ENTRADAS PARA UMA NOVA LISTA, QUE SERÁ ORDENADA
+	tempos = list(tmpExe) # MESMA IDEIA DE CIMA
 	for j in range(0,len(deadlines)):
 		for i in range(0,len(deadlines)-1):
 			if deadlines[i]>deadlines[i+1]:
@@ -66,9 +82,6 @@ def edf():
 				Aux = tempos[i+1] #ORDENA A O TEMPO COM BASE NA DEADLINE
 				tempos[i+1] = tempos[i]
 				tempos[i] = Aux
-	print deadlines
-	print entradas
-	print tempos
 	soma = 0
 	for x in xrange(0,n):
 		aux = tempos[x] - entradas[x]	#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
@@ -80,11 +93,10 @@ def edf():
 def lerDeadlines():
 	del deadlines[:]
 	for x in xrange(0,n):
-		deadlines.append(input("Informe a Deadline do processo "))
+		print "Informe a Deadline do processo ", x, ": "
+		deadlines.append(input())
 		pass
 	
-
-
 #ORDENAÇÃO PASSANDO O TIPO: 0 = ORDENAÇÃO POR CHEGADA, 1 = ORDENAÇÃO POR TEMPO DE PROCESSO
 def ordena (tipo):
 	lista = zip(tmpEnt, tmpExe)
