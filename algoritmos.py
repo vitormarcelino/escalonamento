@@ -38,7 +38,7 @@ def rr ():
 	entradas = list(tmpEnt) #COPIA A LISTA DE ENTRADAS PARA UMA NOVA LISTA, QUE SERÁ ORDENADA
 	tempos = list(tmpExe) # MESMA IDEIA DE CIMA
 	relogio = 0
-	processados = list(tmpEnt)
+	processados = [0]*n
 	count = 0
 	soma = 0
 	for processo, entrada in cycle(zip(tempos, entradas)): #LISTA CIRCULAR
@@ -47,23 +47,24 @@ def rr ():
 			if (processo-processados[count] > quantum) and (entrada <= relogio):
 				processados[count]+=quantum
 				relogio+=quantum
-				print "Processo ", count, " está em processamento."
+				print "Processo ", count+1, " está em processamento. R=", relogio
 			elif (processo-processados[count] <= quantum) and (entrada <= relogio):
 				aux = processo-processados[count]
 				processados[count]+=aux
 				relogio+=aux
-				print "Processo ", count, " está em seu último processamento. R=", relogio
-				soma+=relogio
+				print "Processo ", count+1, " está em seu último processamento. R=", relogio
+				soma+=relogio-entrada
 			else: 
-				print "Processo ", count, " não chegou ainda."
+				print "Processo ", count+1, " não chegou ainda."
 		else:
-			print "Processo ", count, " está pronto."
+			print "Processo ", count+1, " está pronto."
 		if count==n-1:
 			count=0
 		else:
 			count+=1
 		if processados == tempos:
 			break
+	print processados
 	return float(soma/n)
 
 #FUNÇÃO DO ALGORITMO EDF
