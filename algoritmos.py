@@ -13,25 +13,40 @@ def fifo ():
 				Aux = entradas[i+1] #ORDENA A CHEGADA
 				entradas[i+1] = entradas[i]
 				entradas[i] = Aux
-				Aux = tempos[i+1] #ORDENA AS OS TEMPOS COM BASE NA DEADLINE
+				Aux = tempos[i+1] #ORDENA AS OS TEMPOS COM BASE NA CHEGADA
 				tempos[i+1] = tempos[i]
 				tempos[i] = Aux
 	soma = 0
+	relogio = 0
 	for x in xrange(0,n):
-		aux = tempos[x] - entradas[x]	#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
-		soma += (n-x)*aux					#MULTIPLICA
+		relogio += tempos[x] #INCREMENTA O RELOGIO COM O TEMPO DE EXECUÇÃO DO PROCESSO
+		soma += relogio - entradas[x] #INCREMENTA A SOMA COM O TEMPO FINAL DO PROCESSO (RELOGIO) - O TEMPO DE ENTRADA
 		pass
 	return float(soma/n);
 
 #FUNÇÃO DO ALGORITMO SJF
 def sjf ():
-	lista = ordena(1) #ORDENA A LISTA POR TEMPO DO PROCESSO
+	entradas = tmpEnt
+	tempos = tmpExe
+	for j in range(0,n):
+		for i in range(0,n-1):
+			if tempos[i]>tempos[i+1]:
+				Aux = tempos[i+1] #ORDENA AS OS TEMPOS COM BASE NA CHEGADA
+				tempos[i+1] = tempos[i]
+				tempos[i] = Aux
+				Aux = entradas[i+1] #ORDENA A CHEGADA
+				entradas[i+1] = entradas[i]
+				entradas[i] = Aux	
+	print entradas
+	print tempos
 	soma = 0
+	relogio = 0
 	for x in xrange(0,n):
-		aux = lista[x][1] - lista[x][0]		#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
-		soma += (n-x)*aux					#MULTIPLICA
+		relogio += tempos[x] #INCREMENTA O RELOGIO COM O TEMPO DE EXECUÇÃO DO PROCESSO
+		soma += relogio - entradas[x] #INCREMENTA A SOMA COM O TEMPO FINAL DO PROCESSO (RELOGIO) - O TEMPO DE ENTRADA
 		pass
 	return float(soma/n);
+
 
 #FUNÇÃO DO ALGORITMO ROUND ROBIN
 def rr ():
