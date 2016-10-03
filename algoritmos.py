@@ -65,6 +65,7 @@ def rr ():
 			if (processo-processados[count] > quantum) and (entrada <= relogio):
 				processados[count]+=quantum
 				relogio+=quantum
+				print "Ocorreu SOBRECARGA no processo ", count+1
 				print "Processo ", count+1, " está em processamento. R=", relogio
 			elif (processo-processados[count] <= quantum) and (entrada <= relogio):
 				aux = processo-processados[count]
@@ -74,13 +75,18 @@ def rr ():
 				soma+=relogio-entrada
 			else: 
 				print "Processo ", count+1, " não chegou ainda."
+				print entrada, " - ", relogio, " - ",  processados[count], " - ", processo, " - ", entrada
+				print "======"
 		else:
 			print "Processo ", count+1, " está pronto."
 		if count==n-1:
+			print n, count
 			count=0
-		else:
+		elif entradas[count+1]<=relogio:
 			count+=1
-		if processados == tempos:
+		else:
+			count=0
+		if sum(processados) == sum(tempos): #PRECISO MELHORAR AQUI
 			break
 	print processados
 	return float(soma/n)
