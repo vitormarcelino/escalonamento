@@ -5,15 +5,15 @@ from itertools import cycle #IMPORTA LISTA CIRCULA PARA O ALGORITMO ROUND ROBIN
 
 #FUNÇÃO DO ALGORITMO FIFO
 def fifo ():
-	entradas = tmpEnt
-	tempos = tmpExe
-	for j in range(0,n):
+	entradas = list(tmpEnt)
+	tempos = list(tmpExe)
+	for j in range(0,n): #ORDENA COM BASE NAS ENTRADAS (DA MENOR PARA A MAIOR)
 		for i in range(0,n-1):
 			if entradas[i]>entradas[i+1]:
-				Aux = entradas[i+1] #ORDENA A CHEGADA
+				Aux = entradas[i+1] #TROCA A ENTRADA
 				entradas[i+1] = entradas[i]
 				entradas[i] = Aux
-				Aux = tempos[i+1] #ORDENA AS OS TEMPOS COM BASE NA CHEGADA
+				Aux = tempos[i+1] #TROCA O TEMPO
 				tempos[i+1] = tempos[i]
 				tempos[i] = Aux
 	soma = 0
@@ -26,25 +26,28 @@ def fifo ():
 
 #FUNÇÃO DO ALGORITMO SJF
 def sjf ():
-	entradas = tmpEnt
-	tempos = tmpExe
-	for j in range(0,n):
+	entradas = list(tmpEnt)
+	tempos = list(tmpExe)
+	for j in range(0,n): #ORDENA AS OS TEMPOS COM BASE NO TEMPO DE PROCESSO (DO MENOR PARA O MAIOR)
 		for i in range(0,n-1):
-			if tempos[i]>tempos[i+1]:
-				Aux = tempos[i+1] #ORDENA AS OS TEMPOS COM BASE NA CHEGADA
+			if tempos[i]>tempos[i+1]: 
+				Aux = tempos[i+1] 	#TROCA O TEMPO
 				tempos[i+1] = tempos[i]
 				tempos[i] = Aux
-				Aux = entradas[i+1] #ORDENA A CHEGADA
+				Aux = entradas[i+1] #TROCA A ENTRADA
 				entradas[i+1] = entradas[i]
 				entradas[i] = Aux	
-	print entradas
-	print tempos
 	soma = 0
 	relogio = 0
 	for x in xrange(0,n):
-		relogio += tempos[x] #INCREMENTA O RELOGIO COM O TEMPO DE EXECUÇÃO DO PROCESSO
-		soma += relogio - entradas[x] #INCREMENTA A SOMA COM O TEMPO FINAL DO PROCESSO (RELOGIO) - O TEMPO DE ENTRADA
-		pass
+		for y in xrange(0,n):
+			if entradas[y] <= relogio and entradas[y]>=0:
+				escolhido = y
+				break
+			pass
+		relogio += tempos[escolhido] #INCREMENTA O RELOGIO COM O TEMPO DE EXECUÇÃO DO PROCESSO
+		soma += relogio - entradas[escolhido]
+		entradas[escolhido]=-1
 	return float(soma/n);
 
 
@@ -112,12 +115,6 @@ def lerDeadlines():
 		print "Informe a Deadline do processo ", x, ": "
 		deadlines.append(input())
 		pass
-	
-#ORDENAÇÃO PASSANDO O TIPO: 0 = ORDENAÇÃO POR CHEGADA, 1 = ORDENAÇÃO POR TEMPO DE PROCESSO
-def ordena (tipo):
-	lista = zip(tmpEnt, tmpExe)
-	lista.sort(key=lambda x: x[tipo])
-	return lista
 
 #LÊ A QUANTIDADE DE PROCESSOS E CRIA AS LISTAS DE TEMPO DE EXECUÇÃO E TEMPO DE ENTRADA PARA CADA PROCESSO
 n = int(input ("Informe o numero de processos: "))
