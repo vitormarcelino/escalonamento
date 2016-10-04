@@ -50,51 +50,51 @@ def sjf ():
 		entradas[escolhido]=-1
 	return float(soma/n);
 
-
 #FUNÇÃO DO ALGORITMO ROUND ROBIN
 def rr ():
+	entradas = list(tmpEnt) #COPIA A LISTA DE ENTRADAS PARA UMA NOVA LISTA, QUE SERÁ ORDENADA
+	tempos = list(tmpExe) # MESMA IDEIA DE CIMA
+	relogio = 0 
+	processados = [0]*n  #CRIAMOS UMA LISTA ONDE A CADA EXECUÇÃO IREMOS INCREMENTAR O TEMPO QUE FOI EXECUTADO
+	entraram = [0]*n  #CRIAMOS UMA LISTA DE 0/1 PARA SABER QUAIS PROCESSOS JA ENTRAM
+	fila = [] #CRIAMOS UMA FILA, QUE IRÁ DETERMINAR QUAIS OS PROXIMOS PROCESSOS IRÃO EXECUTAR
+	count = 0 
+	soma = 0
+	def entra():
+		for x in xrange(0,n): #ADICIONA OS TEMPOS QUE NÃO ENTRARAM E MENORES OU IGUAL AO RELOGIO NA FILA
+			if entradas[x] <= relogio and entraram[x] == 0:
+				#print "Entrou ", x
+				entraram[x] = 1  # OS PROCESSOS QUE JÁ ENTRARAM, RECEBEM 1, ASSIM SÓ ENTRAM NOVAMENTE NA FILA EM CASO DE PREEPÇÃO
+				fila.append(x)  #O PROCESSO É ADICIONADO AO FIM DA FILA
+			pass
+	entra()
+	for processo in fila:
+		#print "=====", processo, "======"
+		falta = tempos[processo]-processados[processo]  #VARIÁVEL FALTA RECEBE O TEMPO DO PROCESSO - O QUE JÁ FOI PROCESSADO
+		if falta > quantum: #SE FALTA MAIS QUE O QUANTUM ENTRA NO BLOCO
+			relogio+=quantum  #RELOGIO INCREMENTA O QUANTUM, POIS IRÁ EXECUTAR TODO O TEMPO DO QUANTUM
+			entra() #VERIFICA SE ALGUM PROCESSO CHEGA DURANTE A EXECUÇÃO ATUAL
+			processados[processo]+=quantum #INCREMENTA EM UM QUANTUM O QUE JÁ FOI PROCESSADO DO PROCESSO ATUAL
+			#print "Executou ", processo, " até ", relogio
+			#print "Sobrecarga até ", relogio+1
+			#print processo, " foi pro fim da fila"
+			fila.append(processo) #COMO O PROCESSO NÃO FOI EXECUTADO TOTALMENTE, ELE VOLTA PARA O FIM DA FILA DE EXECUÇÃO
+			relogio+=1 #ADIOCIONA AO RELOGIO O TEMPO DA SOBRECARGA
+		elif falta <= quantum and falta > 0: #NESSE CASO VERIFICAMOS SE FALTA ALGUM TEMPO ENTRE 0 E O QUANTUM A SER EXECUTADO
+			relogio+=falta #INCREMENTA O RELÓGIO O TEMPO QUE FALTA
+			entra() #VERIFICA SE ALGUM PROCESSO CHEGA DURANTE A EXECUÇÃO ATUAL
+			processados[processo]+=falta #INCREMENTA O QUE FALTA AO QUE JÁ FOI PROCESSADO DO PROCESSO ATUAL
+			soma+=relogio-entradas[processo] #INCREMENTA A SOMA COM O TURNAROUND DO PROCESSO
+	return float(soma/n) #RETORNA A MEDIA DOS TURNAROUND
+
+#FUNÇÃO DO ALGORITMO EDF
+def edf():
 	entradas = list(tmpEnt) #COPIA A LISTA DE ENTRADAS PARA UMA NOVA LISTA, QUE SERÁ ORDENADA
 	tempos = list(tmpExe) # MESMA IDEIA DE CIMA
 	relogio = 0
 	processados = [0]*n
 	count = 0
 	soma = 0
-	for processo, entrada in cycle(zip(tempos, entradas)): #LISTA CIRCULAR
-		#print processo, " - ", entrada, " - ", count, " - ", processados[count]
-		if processo > processados[count]: ## AINDA FALTA SER PROCESSADO
-			if (processo-processados[count] > quantum) and (entrada <= relogio):
-				processados[count]+=quantum
-				relogio+=quantum
-				print "Ocorreu SOBRECARGA no processo ", count+1
-				print "Processo ", count+1, " está em processamento. R=", relogio
-			elif (processo-processados[count] <= quantum) and (entrada <= relogio):
-				aux = processo-processados[count]
-				processados[count]+=aux
-				relogio+=aux
-				print "Processo ", count+1, " está em seu último processamento. R=", relogio
-				soma+=relogio-entrada
-			else: 
-				print "Processo ", count+1, " não chegou ainda."
-				print entrada, " - ", relogio, " - ",  processados[count], " - ", processo, " - ", entrada
-				print "======"
-		else:
-			print "Processo ", count+1, " está pronto."
-		if count==n-1:
-			print n, count
-			count=0
-		elif entradas[count+1]<=relogio:
-			count+=1
-		else:
-			count=0
-		if sum(processados) == sum(tempos): #PRECISO MELHORAR AQUI
-			break
-	print processados
-	return float(soma/n)
-
-#FUNÇÃO DO ALGORITMO EDF
-def edf():
-	entradas = list(tmpEnt) #COPIA A LISTA DE ENTRADAS PARA UMA NOVA LISTA, QUE SERÁ ORDENADA
-	tempos = list(tmpExe) # MESMA IDEIA DE CIMA
 	for j in range(0,len(deadlines)):
 		for i in range(0,len(deadlines)-1):
 			if deadlines[i]>deadlines[i+1]:
@@ -107,18 +107,26 @@ def edf():
 				Aux = tempos[i+1] #ORDENA A O TEMPO COM BASE NA DEADLINE
 				tempos[i+1] = tempos[i]
 				tempos[i] = Aux
-	soma = 0
-	for x in xrange(0,n):
-		aux = tempos[x] - entradas[x]	#TEMPO DE EXECUÇÃO - TEMPO DE ENTRADA
-		soma += (n-x)*aux					#MULTIPLICA
-		pass
+	#print deadlines, entradas, tempos
+	while processados != tempos:
+		for y in xrange(0,n):
+			if entradas[y] <= relogio and entradas[y] >= 0: #SE SIM, JA CHEGOU
+				escolhido = y
+				break
+		if tempos[escolhido]-processados[escolhido] > quantum :
+			relogio+=quantum
+			processados[escolhido]+=quantum
+		elif tempos[escolhido]-processados[escolhido] <= quantum:
+			relogio+=tempos[escolhido]-processados[escolhido]
+			processados[escolhido]+=tempos[escolhido]-processados[escolhido]
+			tempos[escolhido]=-1
 	return float(soma/n);
 
 #LEITURA DAS DEADLINES
 def lerDeadlines():
-	del deadlines[:]
+	del deadlines[:] #ZERA A LISTA DE DEADLINES PARA A NOVA LEITURA
 	for x in xrange(0,n):
-		print "Informe a Deadline do processo ", x, ": "
+		print "Informe a Deadline do processo ", x+1, ": "
 		deadlines.append(input())
 		pass
 
@@ -158,6 +166,7 @@ while cmd != 0:
 		print "=============================="
 		pass
 	elif cmd == 4:
+		quantum = float(input("Insira o valor do quantum: "))
 		lerDeadlines()
 		print "============ EDF ============="
 		print "TURNAROUND MEDIO: ", edf()
