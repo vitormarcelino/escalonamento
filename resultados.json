@@ -1,0 +1,18 @@
+{
+    "labels": [
+        "FIFO", 
+        "SJF", 
+        "Round Robin", 
+        "EDF"
+    ], 
+    "datasets": [
+        {
+            "data": [
+                3.75, 
+                3.5, 
+                5.0, 
+                5.75
+            ]
+        }
+    ]
+}
