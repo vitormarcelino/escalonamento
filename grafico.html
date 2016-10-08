@@ -3,31 +3,16 @@
     <meta charset="UTF-8">
     <title>Algoritmos de Escalonamento</title>
     <script src="js/jquery.js"></script>
+    <script src="js/bootstrap"></script>
     <script src="js/Chart.js"></script>
+    <script src="js/grafico.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
   </head>
   <body>
-  	<h2>Gráfico de Turnaround médio dos Algoritmos de Escalonamento</h2>
-	
-	<script
->		var resultados = (function () {
-		    var json = null;
-		    $.ajax({
-		        'async': false,
-		        'global': false,
-		        'url': 'resultados.json',
-		        'dataType': "json",
-		        'success': function (data) {
-		            json = data;
-		        }
-		    });
-		    return json;
-		})();
-
-		window.onload = function(){
-			var ctx = document.getElementById("chart-area").getContext("2d");
-			window.myLine = new Chart(ctx).Bar(resultados);
-		}
-	</script>
-	<canvas id="chart-area" width="500" height="200"></canvas>
+  	<div class="text-center">
+  		<h2>Gráfico de Turnaround médio dos Algoritmos de Escalonamento</h2>
+		<canvas id="grafico"></canvas>
+		<p>Projeto desenvolvido por Vitor Marcelino para a disciplina Sistemas Operacionais - 2016.1 UFBA - Professor Maycon Leone</p>
+	</div>
   </body>
 </html>
